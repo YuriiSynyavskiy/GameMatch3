@@ -7,7 +7,7 @@ class Game extends Phaser.Game {
 		this.state.add('MainMenu', MainMenu, false);
 		this.state.start('MainMenu');
 	}
-//sex with Yura and his mom
+//sex with Danylo and his father
 }
 
 new Game();
