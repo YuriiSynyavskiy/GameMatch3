@@ -2,7 +2,6 @@ import PlayState from 'states/PlayState';
 import TutorialState from 'states/TutorialState';
 import {createButton} from '../objects/sfxButton';
 
-
 export class MainMenu extends Phaser.State {
     preload() {
         this.load.audio('backgroundMusic', '../assets/audio/background.mp3');
@@ -19,23 +18,22 @@ export class MainMenu extends Phaser.State {
     }
 
     create() {
-        window['checkMusic'] = false;
-        let backgroundMusic = this.add.audio('backgroundMusic');
-        backgroundMusic.loop = true;
-        backgroundMusic.play();
+        window['music'] = this.add.audio('backgroundMusic');
+        window['music'].loop = true;
+
+        window['music'].play();
 
         this.add.sprite(0, 0, 'backgroundImage');
 
         let soundButton = createButton(this, 900, 10, 'soundButton', 80, 80, () => {
-            if (backgroundMusic.mute === true) {
-                backgroundMusic.mute = false;
-                window['checkMusic'] = false;
+            if (window['music'].mute) {
+                window['music'].mute = false;
 
                 soundButton.tint = 0xFFFFFF;
             } else {
                 soundButton.tint = 0xff0000;
-                backgroundMusic.mute = true;
-                window['checkMusic'] = true;
+
+                window['music'].mute = true;
             }
         });
 
@@ -56,7 +54,7 @@ export class MainMenu extends Phaser.State {
         this.animate(this, donutsLogo, this.world.centerX + 350, 85);
 
         let playBtn = createButton(this, this.world.centerX + 350, this.world.centerY + 50, 'playBtn', 230, 150, () => {
-            backgroundMusic.mute = true;
+            window['music'].mute = true;
 
             this.state.start('playState');
         });
@@ -64,7 +62,7 @@ export class MainMenu extends Phaser.State {
         this.animate(this, playBtn, this.world.centerX + 350, 195);
 
         let howToPlayBtn = createButton(this, this.world.centerX + 350, this.world.centerY + 200, 'howToPlayBtn', 210, 130, () => {
-            backgroundMusic.mute = true;
+            window['music'].mute = true;
 
             this.state.start('tutorialState');
         });
