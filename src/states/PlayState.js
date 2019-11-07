@@ -1,6 +1,6 @@
 import Donut from '../objects/DonutConstructor';
 import {createButton} from '../objects/sfxButton';
-
+import checkMusic from 'states/MainMenu';
 let mainMatrix = []; // global matrix
 let indexes = {
     1:'red-01',
@@ -30,11 +30,17 @@ class PlayState extends Phaser.State{
     }
 
     create() {
+
         this.add.sprite(0, 0, 'backgroundImage');
 
         let backgroundMusic = this.add.audio('backgroundMusic');
         backgroundMusic.loop = true;
-        backgroundMusic.play();
+        if(window['checkMusic']){
+
+        }else{
+            backgroundMusic.play();
+        }
+
 
         let soundButton = createButton(this, 10, 10, 'soundButton', 80, 80, () => {
             if (backgroundMusic.mute === true) {
