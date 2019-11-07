@@ -2,6 +2,7 @@ import PlayState from 'states/PlayState';
 import TutorialState from 'states/TutorialState';
 import {createButton} from '../objects/sfxButton';
 
+
 export class MainMenu extends Phaser.State {
     preload() {
         this.load.audio('backgroundMusic', '../assets/audio/background.mp3');
@@ -18,6 +19,7 @@ export class MainMenu extends Phaser.State {
     }
 
     create() {
+        window['checkMusic'] = false;
         let backgroundMusic = this.add.audio('backgroundMusic');
         backgroundMusic.loop = true;
         backgroundMusic.play();
@@ -27,12 +29,13 @@ export class MainMenu extends Phaser.State {
         let soundButton = createButton(this, 900, 10, 'soundButton', 80, 80, () => {
             if (backgroundMusic.mute === true) {
                 backgroundMusic.mute = false;
+                window['checkMusic'] = false;
 
                 soundButton.tint = 0xFFFFFF;
             } else {
-                backgroundMusic.mute = true;
-
                 soundButton.tint = 0xff0000;
+                backgroundMusic.mute = true;
+                window['checkMusic'] = true;
             }
         });
 
