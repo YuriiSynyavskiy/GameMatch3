@@ -1,6 +1,5 @@
-import Donut from '../objects/DonutConstructor';
 import {createButton} from '../objects/sfxButton';
-import checkMusic from 'states/MainMenu';
+import Donut from '../objects/DonutConstructor';
 
 let mainMatrix = []; // global matrix
 let indexes = {
@@ -13,25 +12,33 @@ let indexes = {
 };
 
 class PlayState extends Phaser.State {
-
-    preload() {
-        this.load.image('backgroundImage', '../assets/images/backgrounds/background.jpg');
-        this.load.image('soundButton', '../assets/images/btn-sfx.png');
-        this.load.image('scoreTable', '../assets/images/bg-score.png');
-        this.load.image('timeUp', '../assets/images/text-timeup.png');
-        this.load.images(
-            ['red-01', 'blue-02', 'green-03', 'lightBlue-04', 'yellow-05', 'pink-06'],
-            [
-                '../assets/images/game/gem-01.png', '../assets/images/game/gem-02.png', '../assets/images/game/gem-03.png',
-                '../assets/images/game/gem-04.png', '../assets/images/game/gem-05.png', '../assets/images/game/gem-06.png'
-            ]
-        );
-        this.load.audio('backgroundMusic', '../assets/audio/background.mp3');
-        this.load.bitmapFont('fredokaOne', '../assets/fonts/FredokaOne-Regular.ttf');
-    }
-
     create() {
         this.add.sprite(0, 0, 'backgroundImage');
+
+        //This will hold all of the donut sprites
+        this.donuts = this.game.add.group();
+
+        this.donutWidth =this.game.cache.getImage('red-01').width;     //donut width
+        this.donutHeight =this.game.cache.getImage('red-01').height;   //donut height
+
+        this.indexes = {                                // types of Donut
+            1: 'red-01',
+            2: 'blue-02',
+            3: 'green-03',
+            4: 'lightBlue-04',
+            5: 'yellow-05',
+            6: 'pink-06'
+        };          //
+
+        this.mainMatrix = [                             // global matrix
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null]
+        ];                              //
+        //Yura
 
         let soundButton = createButton(this, 10, 10, 'soundButton', 80, 80, () => {
             if (window['music'].mute) {
@@ -45,7 +52,7 @@ class PlayState extends Phaser.State {
             }
         });
 
-        if (window['music']) {
+        if (window['music'].mute) {
             soundButton.tint = 0xff0000;
         } else {
             soundButton.tint = 0xFFFFFF;
@@ -55,18 +62,65 @@ class PlayState extends Phaser.State {
         scoreTable.width = 380;
         scoreTable.height = 150;
 
-        let scoreText = this.add.text(this.world.centerX, this.world.centerY - 348, '0', {
+        let scoreText = this.add.text(this.world.centerX, this.world.centerY - 351, '0', {
             font: '58px Fredoka One',
             fill: 'red'
         });
 
-        //function which generate array
-        //function which animaate/method Donut
+        this.generateArray();
     }
 
     generateArray() {
-        // mainMatrix.push(new Donut(200,200,2,0));
-        // this.add.sprite(0,0, indexes[mainMatrix[0].index]);
+        for(let i = 0; i < this.mainMatrix.length; i++){
+
+            //Loop through each position in a specific column, starting from the top
+
+            for(let j = 0; j < this.mainMatrix.length; j++){
+
+                //Add the donut to the game at this matrix position
+                let donut = this.addDonut(i, j);
+
+                //Keep a track of the donut position in our mainMatrix
+                this.mainMatrix[i][j] = donut;
+
+            }
+        }
+        console.log(this.mainMatrix);
+        //Once the donuts are ready, check for any matches on the grid
+        //this.game.time.events.add(600, function(){
+        //    this.checkMatch();});
+
+    }
+
+    addDonut(x, y){                       //for animation of drop-down of donuts
+        //Random Index from 1 - 6
+        let randomIndex  = Math.floor(Math.random()*6+1);
+
+        // Create random donut
+
+
+        //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
+        let donut = this.donuts.create((x * this.donutWidth) + this.donutWidth / 2, 0,  this.indexes[randomIndex]);
+
+
+        let tempDonut = new Donut(this.donutHeight, this.donutWidth, randomIndex, donut );
+        //Animate the tile into the correct vertical position
+        this.game.add.tween(donut).to({y:y*this.donutHeight+(this.donutHeight/2)}, 500, Phaser.Easing.Linear.In, true)
+
+        //Set the tiles anchor point to the center
+        donut.anchor.setTo(0.5, 0.5);
+
+        //Enable input on the tile
+        donut.inputEnabled = true;
+
+
+        //Trigger the tileDown function whenever the user clicks or taps on this tile
+        //donut.events.onInputDown.add(me.tileDown, me);
+
+        return tempDonut;
+    }
+    checkMatch(){
+        console.log('Already is ready 3 matches');
     }
 
 }

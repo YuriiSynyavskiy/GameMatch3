@@ -1,28 +1,7 @@
-import PlayState from 'states/PlayState';
-import TutorialState from 'states/TutorialState';
 import {createButton} from '../objects/sfxButton';
 
 export class MainMenu extends Phaser.State {
-    preload() {
-        this.load.audio('backgroundMusic', '../assets/audio/background.mp3');
-        this.load.image('backgroundImage', '../assets/images/backgrounds/background.jpg');
-        this.load.image('donut', '../assets/images/donut.png');
-        this.load.image('donutShadow', '../assets/images/big-shadow.png');
-        this.load.image('soundButton', '../assets/images/btn-sfx.png');
-        this.load.image('donutsLogo', '../assets/images/donuts_logo.png');
-        this.load.image('playBtn', '../assets/images/btn-play.png');
-        this.load.image('cursor', '../assets/images/game/hand.png');
-        this.load.image('howToPlayBtn', '../assets/images/btn-howToPlay.png');
-        this.state.add('playState', PlayState, false);
-        this.state.add('tutorialState', TutorialState, false);
-    }
-
     create() {
-        window['music'] = this.add.audio('backgroundMusic');
-        window['music'].loop = true;
-
-        window['music'].play();
-
         this.add.sprite(0, 0, 'backgroundImage');
 
         let soundButton = createButton(this, 900, 10, 'soundButton', 80, 80, () => {
@@ -54,16 +33,12 @@ export class MainMenu extends Phaser.State {
         this.animate(this, donutsLogo, this.world.centerX + 350, 85);
 
         let playBtn = createButton(this, this.world.centerX + 350, this.world.centerY + 50, 'playBtn', 230, 150, () => {
-            window['music'].mute = true;
-
             this.state.start('playState');
         });
 
         this.animate(this, playBtn, this.world.centerX + 350, 195);
 
         let howToPlayBtn = createButton(this, this.world.centerX + 350, this.world.centerY + 200, 'howToPlayBtn', 210, 130, () => {
-            window['music'].mute = true;
-
             this.state.start('tutorialState');
         });
 

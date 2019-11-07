@@ -35,9 +35,9 @@ Default: `./static`
 
 ***
 
-**`ENTRY_FILE`** the main source file, by convention named `index.js`. 
+**`ENTRY_FILE`** the main source file, by convention named `boot.js`. 
 
-Default: `SOURCE_PATH + '/index.js'`
+Default: `SOURCE_PATH + '/boot.js'`
 
 ***
 

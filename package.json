@@ -2,7 +2,7 @@
   "name": "phaser-es6-boilerplate",
   "version": "1.0.2",
   "description": "Tiny flexible template for writing Phaser games in ES6/ES2015 with Babel.",
-  "main": "src/index.js",
+  "main": "src/boot.js",
   "scripts": {
     "start": "gulp",
     "production": "gulp --production"
