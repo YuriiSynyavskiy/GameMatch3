@@ -1,4 +1,7 @@
-import {createCustomButton} from '../objects/customButton';
+import {createCustomButton} from '../objects/createCustomButton';
+import {checkMusic} from '../objects/chechMusic';
+import {createCustomSprite} from '../objects/createCustomSprite';
+import {animate} from '../objects/animateSprite';
 
 export class MainMenu extends Phaser.State {
     create() {
@@ -16,53 +19,28 @@ export class MainMenu extends Phaser.State {
             }
         });
 
-        if (window['music'].mute) {
-            soundButton.tint = 0xff0000;
-        } else {
-            soundButton.tint = 0xFFFFFF;
-        }
+        checkMusic(soundButton);
 
-        this.animate(this, soundButton, 900, 10);
+        animate(this, soundButton, 900, 10);
 
-        let donutShadow = this.add.sprite(this.world.centerX - 185, this.world.centerY - 205, 'donutShadow');
-        donutShadow.width = 450;
-        donutShadow.height = 450;
+        let donutShadow = createCustomSprite(this, this.world.centerX - 185, this.world.centerY - 205, 'donutShadow', 450, 450);
 
-        let donut = this.add.sprite(this.world.centerX - 225, this.world.centerY - 225, 'donut');
-        donut.width = 450;
-        donut.height = 450;
+        let donut = createCustomSprite(this,this.world.centerX - 225, this.world.centerY - 225, 'donut', 450, 450);
 
-        let donutsLogo = this.add.sprite(this.world.centerX + 350, this.world.centerY - 325, 'donutsLogo');
-        donutsLogo.width = 480;
-        donutsLogo.height = 170;
+        let donutsLogo = createCustomSprite(this,this.world.centerX + 550, this.world.centerY - 325, 'donutsLogo', 480, 170);
 
-        this.animate(this, donutsLogo, this.world.centerX + 350, 85);
+        animate(this, donutsLogo, this.world.centerX + 550, 85);
 
-        let playBtn = createCustomButton(this, this.world.centerX + 350, this.world.centerY + 50, 'playBtn', 230, 150, () => {
+        let playBtn = createCustomButton(this, this.world.centerX + 550, this.world.centerY + 50, 'playBtn', 230, 150, () => {
             this.state.start('playState');
         });
 
-        this.animate(this, playBtn, this.world.centerX + 350, 195);
+        animate(this, playBtn, this.world.centerX + 550, 195);
 
-        let howToPlayBtn = createCustomButton(this, this.world.centerX + 350, this.world.centerY + 200, 'howToPlayBtn', 210, 130, () => {
+        let howToPlayBtn = createCustomButton(this, this.world.centerX + 550, this.world.centerY + 200, 'howToPlayBtn', 210, 130, () => {
             this.state.start('tutorialState');
         });
 
-        this.animate(this, howToPlayBtn, this.world.centerX + 350, 205);
+        animate(this, howToPlayBtn, this.world.centerX + 550, 205);
     }
-
-    animate(game, item, start, end, stopNumber = 0) {
-        if (stopNumber >= start - end) {
-            return 0;
-        }
-
-        setTimeout(() => {
-            item.x = start - stopNumber;
-
-            stopNumber += 3;
-
-            this.animate(game, item, start, end, stopNumber);
-        }, 1);
-    }
-
 }
