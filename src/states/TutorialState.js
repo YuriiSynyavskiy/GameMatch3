@@ -4,6 +4,24 @@ class TutorialState extends Phaser.State {
     create() {
         this.add.sprite(0, 0, 'backgroundImage');
 
+        let soundButton = createButton(this, 10, 10, 'soundButton', 80, 80, () => {
+            if (window['music'].mute) {
+                window['music'].mute = false;
+
+                soundButton.tint = 0xFFFFFF;
+            } else {
+                window['music'].mute = true;
+
+                soundButton.tint = 0xff0000;
+            }
+        });
+
+        if (window['music'].mute) {
+            soundButton.tint = 0xff0000;
+        } else {
+            soundButton.tint = 0xFFFFFF;
+        }
+
         let returnBtn = createButton(this, this.world.centerX + 110, this.world.centerY + 350, 'returnButton', 230, 150, () => {
             this.state.start('mainMenu');
         });

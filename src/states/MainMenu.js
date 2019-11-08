@@ -16,6 +16,12 @@ export class MainMenu extends Phaser.State {
             }
         });
 
+        if (window['music'].mute) {
+            soundButton.tint = 0xff0000;
+        } else {
+            soundButton.tint = 0xFFFFFF;
+        }
+
         this.animate(this, soundButton, 900, 10);
 
         let donutShadow = this.add.sprite(this.world.centerX - 185, this.world.centerY - 205, 'donutShadow');
@@ -43,10 +49,6 @@ export class MainMenu extends Phaser.State {
         });
 
         this.animate(this, howToPlayBtn, this.world.centerX + 350, 205);
-    }
-
-    update() {
-
     }
 
     animate(game, item, start, end, stopNumber = 0) {
