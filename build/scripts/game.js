@@ -15,6 +15,10 @@ var _PlayState = require('./states/PlayState');
 
 var _PlayState2 = _interopRequireDefault(_PlayState);
 
+var _GameOverState = require('./states/GameOverState');
+
+var _GameOverState2 = _interopRequireDefault(_GameOverState);
+
 function _interopRequireDefault(obj) {
 	return obj && obj.__esModule ? obj : { default: obj };
 }
@@ -49,6 +53,7 @@ var Game = function (_Phaser$Game) {
 		_this.state.add('preloader', _Preloader2.default, false);
 		_this.state.add('tutorialState', _TutorialState2.default, false);
 		_this.state.add('playState', _PlayState2.default, false);
+		_this.state.add('gameOverState', _GameOverState2.default, false);
 
 		_this.state.start('preloader');
 		return _this;
@@ -59,7 +64,7 @@ var Game = function (_Phaser$Game) {
 
 new Game();
 
-},{"./states/PlayState":5,"./states/Preloader":6,"./states/TutorialState":7,"states/MainMenu":4}],2:[function(require,module,exports){
+},{"./states/GameOverState":7,"./states/PlayState":9,"./states/Preloader":10,"./states/TutorialState":11,"states/MainMenu":8}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -89,6 +94,44 @@ exports.default = Donut;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.animate = animate;
+function animate(game, item, start, end) {
+    var stopNumber = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+
+    if (stopNumber >= start - end) {
+        return 0;
+    }
+
+    setTimeout(function () {
+        item.x = start - stopNumber;
+
+        stopNumber += 3;
+
+        animate(game, item, start, end, stopNumber);
+    }, 1);
+}
+
+},{}],4:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.checkMusic = checkMusic;
+function checkMusic(soundButton) {
+    if (window['music'].mute) {
+        soundButton.tint = 0xff0000;
+    } else {
+        soundButton.tint = 0xFFFFFF;
+    }
+}
+
+},{}],5:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 exports.createCustomButton = createCustomButton;
 function createCustomButton(game, x, y, image, width, height, cb) {
     var button = game.add.button(x, y, image, cb, game);
@@ -99,13 +142,28 @@ function createCustomButton(game, x, y, image, width, height, cb) {
     return button;
 }
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createCustomSprite = createCustomSprite;
+function createCustomSprite(game, x, y, image, width, height) {
+    var sprite = game.add.sprite(x, y, image);
+
+    sprite.width = width;
+    sprite.height = height;
+
+    return sprite;
+}
+
+},{}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.MainMenu = undefined;
 
 var _createClass = function () {
     function defineProperties(target, props) {
@@ -117,7 +175,7 @@ var _createClass = function () {
     };
 }();
 
-var _customButton = require('../objects/customButton');
+var _createCustomButton = require('../objects/createCustomButton');
 
 function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -137,93 +195,129 @@ function _inherits(subClass, superClass) {
     }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
 }
 
-var MainMenu = exports.MainMenu = function (_Phaser$State) {
-    _inherits(MainMenu, _Phaser$State);
+var GameOverState = function (_Phaser$State) {
+    _inherits(GameOverState, _Phaser$State);
 
-    function MainMenu() {
-        _classCallCheck(this, MainMenu);
+    function GameOverState() {
+        _classCallCheck(this, GameOverState);
 
-        return _possibleConstructorReturn(this, (MainMenu.__proto__ || Object.getPrototypeOf(MainMenu)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (GameOverState.__proto__ || Object.getPrototypeOf(GameOverState)).apply(this, arguments));
     }
 
-    _createClass(MainMenu, [{
+    _createClass(GameOverState, [{
         key: 'create',
         value: function create() {
-            var _this2 = this;
-
             this.add.sprite(0, 0, 'backgroundImage');
-            console.log('123');
-            var soundButton = (0, _customButton.createCustomButton)(this, 900, 10, 'soundButton', 80, 80, function () {
-                if (window['music'].mute) {
-                    window['music'].mute = false;
-
-                    soundButton.tint = 0xFFFFFF;
-                } else {
-                    soundButton.tint = 0xff0000;
-
-                    window['music'].mute = true;
-                }
-            });
-
-            if (window['music'].mute) {
-                soundButton.tint = 0xff0000;
-            } else {
-                soundButton.tint = 0xFFFFFF;
-            }
-
-            this.animate(this, soundButton, 900, 10);
-
-            var donutShadow = this.add.sprite(this.world.centerX - 185, this.world.centerY - 205, 'donutShadow');
-            donutShadow.width = 450;
-            donutShadow.height = 450;
-
-            var donut = this.add.sprite(this.world.centerX - 225, this.world.centerY - 225, 'donut');
-            donut.width = 450;
-            donut.height = 450;
-
-            var donutsLogo = this.add.sprite(this.world.centerX + 350, this.world.centerY - 325, 'donutsLogo');
-            donutsLogo.width = 480;
-            donutsLogo.height = 170;
-
-            this.animate(this, donutsLogo, this.world.centerX + 350, 85);
-
-            var playBtn = (0, _customButton.createCustomButton)(this, this.world.centerX + 350, this.world.centerY + 50, 'playBtn', 230, 150, function () {
-                _this2.state.start('playState');
-            });
-
-            this.animate(this, playBtn, this.world.centerX + 350, 195);
-
-            var howToPlayBtn = (0, _customButton.createCustomButton)(this, this.world.centerX + 350, this.world.centerY + 200, 'howToPlayBtn', 210, 130, function () {
-                _this2.state.start('tutorialState');
-            });
-
-            this.animate(this, howToPlayBtn, this.world.centerX + 350, 205);
-        }
-    }, {
-        key: 'animate',
-        value: function animate(game, item, start, end) {
-            var _this3 = this;
-
-            var stopNumber = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-
-            if (stopNumber >= start - end) {
-                return 0;
-            }
-
-            setTimeout(function () {
-                item.x = start - stopNumber;
-
-                stopNumber += 3;
-
-                _this3.animate(game, item, start, end, stopNumber);
-            }, 1);
         }
     }]);
 
-    return MainMenu;
+    return GameOverState;
 }(Phaser.State);
 
-},{"../objects/customButton":3}],5:[function(require,module,exports){
+exports.default = GameOverState;
+
+},{"../objects/createCustomButton":5}],8:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+        value: true
+});
+exports.MainMenu = undefined;
+
+var _createClass = function () {
+        function defineProperties(target, props) {
+                for (var i = 0; i < props.length; i++) {
+                        var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+                }
+        }return function (Constructor, protoProps, staticProps) {
+                if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+        };
+}();
+
+var _createCustomButton = require('../objects/createCustomButton');
+
+var _chechMusic = require('../objects/chechMusic');
+
+var _createCustomSprite = require('../objects/createCustomSprite');
+
+var _animateSprite = require('../objects/animateSprite');
+
+function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+                throw new TypeError("Cannot call a class as a function");
+        }
+}
+
+function _possibleConstructorReturn(self, call) {
+        if (!self) {
+                throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        }return call && (typeof call === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
+                throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+        }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+
+var MainMenu = exports.MainMenu = function (_Phaser$State) {
+        _inherits(MainMenu, _Phaser$State);
+
+        function MainMenu() {
+                _classCallCheck(this, MainMenu);
+
+                return _possibleConstructorReturn(this, (MainMenu.__proto__ || Object.getPrototypeOf(MainMenu)).apply(this, arguments));
+        }
+
+        _createClass(MainMenu, [{
+                key: 'create',
+                value: function create() {
+                        var _this2 = this;
+
+                        this.add.sprite(0, 0, 'backgroundImage');
+
+                        var soundButton = (0, _createCustomButton.createCustomButton)(this, 900, 10, 'soundButton', 80, 80, function () {
+                                if (window['music'].mute) {
+                                        window['music'].mute = false;
+
+                                        soundButton.tint = 0xFFFFFF;
+                                } else {
+                                        soundButton.tint = 0xff0000;
+
+                                        window['music'].mute = true;
+                                }
+                        });
+
+                        (0, _chechMusic.checkMusic)(soundButton);
+
+                        (0, _animateSprite.animate)(this, soundButton, 900, 10);
+
+                        var donutShadow = (0, _createCustomSprite.createCustomSprite)(this, this.world.centerX - 185, this.world.centerY - 205, 'donutShadow', 450, 450);
+
+                        var donut = (0, _createCustomSprite.createCustomSprite)(this, this.world.centerX - 225, this.world.centerY - 225, 'donut', 450, 450);
+
+                        var donutsLogo = (0, _createCustomSprite.createCustomSprite)(this, this.world.centerX + 550, this.world.centerY - 325, 'donutsLogo', 480, 170);
+
+                        (0, _animateSprite.animate)(this, donutsLogo, this.world.centerX + 550, 85);
+
+                        var playBtn = (0, _createCustomButton.createCustomButton)(this, this.world.centerX + 550, this.world.centerY + 50, 'playBtn', 230, 150, function () {
+                                _this2.state.start('playState');
+                        });
+
+                        (0, _animateSprite.animate)(this, playBtn, this.world.centerX + 550, 195);
+
+                        var howToPlayBtn = (0, _createCustomButton.createCustomButton)(this, this.world.centerX + 550, this.world.centerY + 200, 'howToPlayBtn', 210, 130, function () {
+                                _this2.state.start('tutorialState');
+                        });
+
+                        (0, _animateSprite.animate)(this, howToPlayBtn, this.world.centerX + 550, 205);
+                }
+        }]);
+
+        return MainMenu;
+}(Phaser.State);
+
+},{"../objects/animateSprite":3,"../objects/chechMusic":4,"../objects/createCustomButton":5,"../objects/createCustomSprite":6}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -240,11 +334,15 @@ var _createClass = function () {
     };
 }();
 
-var _customButton = require('../objects/customButton');
+var _createCustomButton = require('../objects/createCustomButton');
 
 var _DonutConstructor = require('../objects/DonutConstructor');
 
 var _DonutConstructor2 = _interopRequireDefault(_DonutConstructor);
+
+var _chechMusic = require('../objects/chechMusic');
+
+var _createCustomSprite = require('../objects/createCustomSprite');
 
 function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : { default: obj };
@@ -268,8 +366,6 @@ function _inherits(subClass, superClass) {
     }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
 }
 
-var mainMatrix = []; // global matrix
-
 var PlayState = function (_Phaser$State) {
     _inherits(PlayState, _Phaser$State);
 
@@ -282,7 +378,54 @@ var PlayState = function (_Phaser$State) {
     _createClass(PlayState, [{
         key: 'create',
         value: function create() {
+            var _this2 = this;
+
             this.add.sprite(0, 0, 'backgroundImage');
+
+            //timer
+            var startTimer = new Date();
+            this.timeToPlay = 5;
+            this.timeExpired = 0;
+
+            var timeLabel = this.add.text(490, 43, "5", { font: "50px Fredoka One", fill: "red" });
+
+            this.time.events.loop(100, function () {
+                var currentTime = new Date();
+
+                var timeDifference = startTimer.getTime() - currentTime.getTime();
+
+                _this2.timeExpired = Math.abs(timeDifference / 1000);
+
+                var timeRemaining = _this2.timeToPlay - _this2.timeExpired;
+
+                var seconds = Math.floor(timeRemaining) - 60 * Math.floor(timeRemaining / 60);
+
+                timeLabel.text = seconds;
+            });
+            //
+
+            //sound button and score table
+            var soundButton = (0, _createCustomButton.createCustomButton)(this, 10, 10, 'soundButton', 80, 80, function () {
+                if (window['music'].mute) {
+                    window['music'].mute = false;
+
+                    soundButton.tint = 0xFFFFFF;
+                } else {
+                    window['music'].mute = true;
+
+                    soundButton.tint = 0xff0000;
+                }
+            });
+
+            (0, _chechMusic.checkMusic)(soundButton);
+
+            var scoreTable = (0, _createCustomSprite.createCustomSprite)(this, this.world.centerX - 170, this.world.centerY - 380, 'scoreTable', 380, 150);
+
+            var scoreText = this.add.text(this.world.centerX, this.world.centerY - 351, '0', {
+                font: '58px Fredoka One',
+                fill: 'red'
+            });
+            //
 
             //This will hold all of the donut sprites
             this.donuts = this.game.add.group();
@@ -301,34 +444,6 @@ var PlayState = function (_Phaser$State) {
 
             this.mainMatrix = [// global matrix
             [null, null, null, null, null, null], [null, null, null, null, null, null], [null, null, null, null, null, null], [null, null, null, null, null, null], [null, null, null, null, null, null], [null, null, null, null, null, null]]; //
-            //Yura
-
-            var soundButton = (0, _customButton.createCustomButton)(this, 10, 10, 'soundButton', 80, 80, function () {
-                if (window['music'].mute) {
-                    window['music'].mute = false;
-
-                    soundButton.tint = 0xFFFFFF;
-                } else {
-                    window['music'].mute = true;
-
-                    soundButton.tint = 0xff0000;
-                }
-            });
-
-            if (window['music'].mute) {
-                soundButton.tint = 0xff0000;
-            } else {
-                soundButton.tint = 0xFFFFFF;
-            }
-
-            var scoreTable = this.add.sprite(this.world.centerX - 170, this.world.centerY - 380, 'scoreTable');
-            scoreTable.width = 380;
-            scoreTable.height = 150;
-
-            var scoreText = this.add.text(this.world.centerX, this.world.centerY - 351, '0', {
-                font: '58px Fredoka One',
-                fill: 'red'
-            });
 
             this.generateArray();
             this.checkMatch();
@@ -358,11 +473,13 @@ var PlayState = function (_Phaser$State) {
         key: 'addDonut',
         value: function addDonut(x, y) {
             //for animation of drop-down of donuts
+
             //Random Index from 1 - 6
             var randomIndex = Math.floor(Math.random() * 6 + 1);
 
             //Create random donut
             //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
+
             var donut = this.add.sprite(x * this.donutWidth + this.donutWidth / 2 + 7, 0, this.indexes[randomIndex]);
 
             //Adding to group
@@ -371,9 +488,12 @@ var PlayState = function (_Phaser$State) {
 
 
             //Create object donut
-            var tempDonut = new _DonutConstructor2.default(this.donutHeight, this.donutWidth, randomIndex, donut);
+
             //Animate the tile into the correct vertical position
             this.game.add.tween(donut).to({ y: y * this.donutHeight + this.donutHeight / 2 + 120 }, 600, Phaser.Easing.Linear.In, true);
+
+            var tempDonut = new _DonutConstructor2.default(this.donutHeight, this.donutWidth, randomIndex, donut);
+            //Animate the tile into the correct vertical position
 
             //Set the tiles anchor point to the center
             donut.anchor.setTo(0.5, 0.5);
@@ -407,7 +527,7 @@ var PlayState = function (_Phaser$State) {
                             var tempIndex = tempLine[j].index; //tempValue for checking value of next
                             j += 2;
                             for (var nextDonut = j + 3; nextDonut < tempLine.length; nextDonut++) {
-                                if (tempIndex = tempLine[nextDonut].index) {
+                                if (tempIndex === tempLine[nextDonut].index) {
                                     groupOf3orMore.push(tempLine[nextDonut]);
                                     j += 1;
                                 } else {
@@ -419,6 +539,13 @@ var PlayState = function (_Phaser$State) {
                 }
             }
         }
+    }, {
+        key: 'update',
+        value: function update() {
+            if (this.timeExpired > this.timeToPlay - 1) {
+                this.state.start('gameOverState');
+            }
+        }
     }]);
 
     return PlayState;
@@ -426,7 +553,7 @@ var PlayState = function (_Phaser$State) {
 
 exports.default = PlayState;
 
-},{"../objects/DonutConstructor":2,"../objects/customButton":3}],6:[function(require,module,exports){
+},{"../objects/DonutConstructor":2,"../objects/chechMusic":4,"../objects/createCustomButton":5,"../objects/createCustomSprite":6}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -506,7 +633,7 @@ var Preloader = function (_Phaser$State) {
 
 exports.default = Preloader;
 
-},{}],7:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -523,7 +650,9 @@ var _createClass = function () {
     };
 }();
 
-var _customButton = require('../objects/customButton');
+var _createCustomButton = require('../objects/createCustomButton');
+
+var _chechMusic = require('../objects/chechMusic');
 
 function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -559,7 +688,7 @@ var TutorialState = function (_Phaser$State) {
 
             this.add.sprite(0, 0, 'backgroundImage');
 
-            var soundButton = (0, _customButton.createCustomButton)(this, 10, 10, 'soundButton', 80, 80, function () {
+            var soundButton = (0, _createCustomButton.createCustomButton)(this, 10, 10, 'soundButton', 80, 80, function () {
                 if (window['music'].mute) {
                     window['music'].mute = false;
 
@@ -571,13 +700,9 @@ var TutorialState = function (_Phaser$State) {
                 }
             });
 
-            if (window['music'].mute) {
-                soundButton.tint = 0xff0000;
-            } else {
-                soundButton.tint = 0xFFFFFF;
-            }
+            (0, _chechMusic.checkMusic)(soundButton);
 
-            var returnBtn = (0, _customButton.createCustomButton)(this, this.world.centerX + 110, this.world.centerY + 350, 'returnButton', 230, 150, function () {
+            var returnBtn = (0, _createCustomButton.createCustomButton)(this, this.world.centerX + 110, this.world.centerY + 350, 'returnButton', 230, 150, function () {
                 _this2.state.start('mainMenu');
             });
 
@@ -615,5 +740,5 @@ var TutorialState = function (_Phaser$State) {
 
 exports.default = TutorialState;
 
-},{"../objects/customButton":3}]},{},[1])
+},{"../objects/chechMusic":4,"../objects/createCustomButton":5}]},{},[1])
 //# sourceMappingURL=game.js.map
