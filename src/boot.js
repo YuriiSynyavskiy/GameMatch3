@@ -6,7 +6,7 @@ import PlayState from './states/PlayState';
 class Game extends Phaser.Game {
 
 	constructor() {
-		super(window.innerWidth / 2.5, window.innerHeight, Phaser.AUTO);
+		super(614.4 , 750, Phaser.AUTO);
 		this.state.add('mainMenu', MainMenu, false);
 		this.state.add('preloader', Preloader, false);
 		this.state.add('tutorialState', TutorialState, false);
