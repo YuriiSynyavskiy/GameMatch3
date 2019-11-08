@@ -7,6 +7,72 @@ class PlayState extends Phaser.State {
     create() {
         this.add.sprite(0, 0, 'backgroundImage');
 
+        //timer
+        let startTimer = new Date();
+        this.timeToPlay = 5;
+        this.timeExpired = 0;
+
+        let timeLabel = this.add.text(490, 43, "5", {font: "50px Fredoka One", fill: "red"});
+
+        this.time.events.loop(100, () => {
+            let currentTime = new Date();
+
+
+        this.mainMatrix = [                             // global matrix
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null]
+        ];                              //
+
+        /*this.trainingSet = [
+            [1, 1, 1, 2, 2, 2],
+            [5, 5, 5, 5, 6, 2],
+            [1, 5, 3, 4, 6, 5],
+            [2, 5, 4, 3, 6, 3],
+            [1, 6, 6, 6, 6, 6],
+            [2, 2, 6, 3, 3, 3]
+        ];*/
+        //Yura
+
+            let timeDifference = startTimer.getTime() - currentTime.getTime();
+
+            this.timeExpired = Math.abs(timeDifference / 1000);
+
+            let timeRemaining = this.timeToPlay - this.timeExpired;
+
+
+            let seconds = Math.floor(timeRemaining) - (60 * Math.floor(timeRemaining / 60));
+
+            timeLabel.text = seconds;
+        });
+        //
+
+        //sound button and score table
+        let soundButton = createCustomButton(this, 10, 10, 'soundButton', 80, 80, () => {
+            if (window['music'].mute) {
+                window['music'].mute = false;
+
+                soundButton.tint = 0xFFFFFF;
+            } else {
+                window['music'].mute = true;
+
+                soundButton.tint = 0xff0000;
+            }
+        });
+
+        checkMusic(soundButton);
+
+        let scoreTable = createCustomSprite(this, this.world.centerX - 170, this.world.centerY - 380, 'scoreTable', 380, 150);
+
+        let scoreText = this.add.text(this.world.centerX, this.world.centerY - 351, '0', {
+            font: '58px Fredoka One',
+            fill: 'red'
+        });
+        //
+
         //This will hold all of the donut sprites
         this.donuts = this.game.add.group();
 
@@ -30,36 +96,6 @@ class PlayState extends Phaser.State {
             [null, null, null, null, null, null],
             [null, null, null, null, null, null]
         ];                              //
-        /*this.trainingSet = [
-            [1, 1, 1, 2, 2, 2],
-            [5, 5, 5, 5, 6, 2],
-            [1, 5, 3, 4, 6, 5],
-            [2, 5, 4, 3, 6, 3],
-            [1, 6, 6, 6, 6, 6],
-            [2, 2, 6, 3, 3, 3]
-        ];*/
-        //Yura
-
-        let soundButton = createCustomButton(this, 10, 10, 'soundButton', 80, 80, () => {
-            if (window['music'].mute) {
-                window['music'].mute = false;
-
-                soundButton.tint = 0xFFFFFF;
-            } else {
-                window['music'].mute = true;
-
-                soundButton.tint = 0xff0000;
-            }
-        });
-
-        checkMusic(soundButton);
-
-        let scoreTable = createCustomSprite(this, this.world.centerX - 170, this.world.centerY - 380, 'scoreTable', 380, 150);
-
-        let scoreText = this.add.text(this.world.centerX, this.world.centerY - 351, '0', {
-            font: '58px Fredoka One',
-            fill: 'red'
-        });
 
         this.generateArray();
         this.checkMatch();
@@ -97,7 +133,7 @@ class PlayState extends Phaser.State {
         //Create random donut
         //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
 
-        let donut = this.add.sprite((x * this.donutWidth) + this.donutWidth/2 + 7 ,  0 , this.indexes[randomIndex]);
+        let donut = this.add.sprite((x * this.donutWidth) + this.donutWidth / 2 + 7, 0, this.indexes[randomIndex]);
 
         //Adding to group
         //let donut = this.donuts.create((x * this.donutWidth) + this.donutWidth / 2 + 7, 0,  this.indexes[randomIndex]);
@@ -107,8 +143,7 @@ class PlayState extends Phaser.State {
         //Create object donut
 
         //Animate the tile into the correct vertical position
-        this.game.add.tween(donut).to({y:y*this.donutHeight+(this.donutHeight/2) + 120}, 600, Phaser.Easing.Linear.In, true)
-
+        this.game.add.tween(donut).to({y: y * this.donutHeight + (this.donutHeight / 2) + 120}, 600, Phaser.Easing.Linear.In, true);
 
 
         let tempDonut = new Donut(this.donutHeight, this.donutWidth, randomIndex, donut);
@@ -135,9 +170,9 @@ class PlayState extends Phaser.State {
             }
         }
     }
-    checkMatch(){
-        let combinations  = this.getMatches();
-        this.game.time.events.add(2000, ()=> {
+    checkMatch() {
+        let combinations = this.getMatches();
+        this.game.time.events.add(2000, () => {
             this.destroyDonuts(combinations);
             //this.canMove = true;
         });
@@ -163,6 +198,7 @@ class PlayState extends Phaser.State {
                         groupOf3orMore.push(tempLine[j], tempLine[j + 1], tempLine[j + 2]);     // push this 3 elements
                         let tempIndex = tempLine[j].index;                                  //tempValue for checking value of next
                         j += 2;
+
                         //console.log(j);
                         if((j === tempLine.length-1)&&(groupOf3orMore.length)){
                             combinations.push(groupOf3orMore);
@@ -171,6 +207,7 @@ class PlayState extends Phaser.State {
                         }else{                      // for check next elements : if next donut has the same index, check next donut after this while index element will be another
 
                         for (let nextDonut = j + 1; nextDonut < tempLine.length; nextDonut++) {
+
                             if (tempIndex === tempLine[nextDonut].index) {
                                 groupOf3orMore.push(tempLine[nextDonut]);
                                 j += 1;
@@ -243,6 +280,12 @@ class PlayState extends Phaser.State {
     }
 
 
+
+    update() {
+        if (this.timeExpired > this.timeToPlay - 1) {
+            this.state.start('gameOverState');
+        }
+    }
 
 }
 export default PlayState;
