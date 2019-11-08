@@ -281,6 +281,8 @@ class PlayState extends Phaser.State {
     }
 
 
+
+
     update() {
         if (this.timeExpired > this.timeToPlay) {
             this.state.start('gameOverState');
