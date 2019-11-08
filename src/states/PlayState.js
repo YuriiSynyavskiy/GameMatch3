@@ -9,7 +9,7 @@ class PlayState extends Phaser.State {
 
         //timer
         let startTimer = new Date();
-        this.timeToPlay = 60;
+        this.timeToPlay = 5;
         this.timeExpired = 0;
 
         let timeLabel = this.add.text(500, 38, "60", {font: "50px Fredoka One", fill: "red"});
@@ -72,7 +72,7 @@ class PlayState extends Phaser.State {
         ];*/
         //Yura
 
-        this.donuts = this.game.add.group();
+       // this.donuts = this.game.add.group();
 
         this.donutWidth = this.game.cache.getImage('red-01').width;     //donut width
         this.donutHeight = this.game.cache.getImage('red-01').height;   //donut height
@@ -95,8 +95,9 @@ class PlayState extends Phaser.State {
             [null, null, null, null, null, null]
         ];                              //
 
-        this.generateArray();
+        this.generateArray();           //mainMatrix and animation
         this.checkMatch();
+
     }
 
     generateArray() {
@@ -150,7 +151,7 @@ class PlayState extends Phaser.State {
         //Set the tiles anchor point to the center
         donut.anchor.setTo(0.5, 0.5);
 
-        //Enable input on the tile
+        //Enable input on the donut
         donut.inputEnabled = true;
 
 
@@ -163,7 +164,6 @@ class PlayState extends Phaser.State {
     destroyDonuts(combinations) {                                            // animations  ...................
 
         for (let i = 0; i < combinations.length; i++) {
-            console.log(combinations[i]);
             for (let j = 0; j < combinations[i].length; j++) {
                 combinations[i][j].sprite.destroy();
             }
@@ -172,10 +172,19 @@ class PlayState extends Phaser.State {
 
     checkMatch() {
         let combinations = this.getMatches();
-        this.game.time.events.add(1000, () => {
-            this.destroyDonuts(combinations);
-            // this.canMove = true;
-        });
+            if (combinations.length > 0) {
+                this.game.time.events.add(1000, () => {                         // destroying existing combinations with delay 1s
+                    this.destroyDonuts(combinations);
+                    // this.canMove = true;
+                    });
+                // change value of deleted donuts to null in MainMatrix
+                this.resetMatrixValues(combinations);
+                // fill null'ed values by new donuts    in MainMatrix
+                this.fillMatrixByNewDonuts();
+             }else {
+                //Danylo's part
+                    //this.swapDonuts();
+        }
     }
 
     getMatches() {
@@ -284,6 +293,13 @@ class PlayState extends Phaser.State {
 
 
     update() {
+
+        // this.swapGems(x, y);
+        //if( this.checkMatches()){
+        //this.animate();
+        //}else{
+        //
+    //}
         if (this.timeExpired > this.timeToPlay) {
             this.state.start('gameOverState');
         }
