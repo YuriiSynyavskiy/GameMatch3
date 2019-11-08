@@ -6,7 +6,11 @@ import PlayState from './states/PlayState';
 class Game extends Phaser.Game {
 
 	constructor() {
-		super(614.4 , 750, Phaser.AUTO);
+
+		super(614.4 , 750, Phaser.AUTO);				// window.InnerHeight
+
+
+
 		this.state.add('mainMenu', MainMenu, false);
 		this.state.add('preloader', Preloader, false);
 		this.state.add('tutorialState', TutorialState, false);

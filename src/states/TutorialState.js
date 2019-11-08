@@ -1,4 +1,5 @@
-import {createCustomButton} from '../objects/customButton';
+import {createCustomButton} from '../objects/createCustomButton';
+import {checkMusic} from "../objects/chechMusic";
 
 class TutorialState extends Phaser.State {
     create() {
@@ -16,11 +17,7 @@ class TutorialState extends Phaser.State {
             }
         });
 
-        if (window['music'].mute) {
-            soundButton.tint = 0xff0000;
-        } else {
-            soundButton.tint = 0xFFFFFF;
-        }
+        checkMusic(soundButton);
 
         let returnBtn = createCustomButton(this, this.world.centerX + 110, this.world.centerY + 350, 'returnButton', 230, 150, () => {
             this.state.start('mainMenu');
