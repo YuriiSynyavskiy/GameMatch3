@@ -74,6 +74,13 @@ class PlayState extends Phaser.State {
 
        // this.donuts = this.game.add.group();
 
+        //Keep track of the tiles the user is trying to swap (if any)
+        this.activeDonut1 = null;
+        this.activeDonut2 = null;
+
+        //Controls whether the player can make a move or not
+        this.canMove = false;
+
         this.donutWidth = this.game.cache.getImage('red-01').width;     //donut width
         this.donutHeight = this.game.cache.getImage('red-01').height;   //donut height
 
@@ -85,15 +92,6 @@ class PlayState extends Phaser.State {
             5: 'yellow-05',
             6: 'pink-06'
         };
-
-        this.mainMatrix = [                             // global matrix
-            [null, null, null, null, null, null],
-            [null, null, null, null, null, null],
-            [null, null, null, null, null, null],
-            [null, null, null, null, null, null],
-            [null, null, null, null, null, null],
-            [null, null, null, null, null, null]
-        ];                              //
 
         this.generateArray();           //mainMatrix and animation
         this.checkMatch();
@@ -138,7 +136,6 @@ class PlayState extends Phaser.State {
         //let donut = this.donuts.create((x * this.donutWidth) + this.donutWidth / 2 + 7, 0,  this.indexes[randomIndex]);
         //
 
-
         //Create object donut
 
         //Animate the tile into the correct vertical position
@@ -154,9 +151,8 @@ class PlayState extends Phaser.State {
         //Enable input on the donut
         donut.inputEnabled = true;
 
-
         //Trigger the tileDown function whenever the user clicks or taps on this tile
-        //donut.events.onInputDown.add(me.tileDown, me);
+        donut.events.onInputDown.add(this.donutDown, this);
 
         return tempDonut;
     }
@@ -178,9 +174,9 @@ class PlayState extends Phaser.State {
                     // this.canMove = true;
                     });
                 // change value of deleted donuts to null in MainMatrix
-                this.resetMatrixValues(combinations);
+                // this.resetMatrixValues(combinations);
                 // fill null'ed values by new donuts    in MainMatrix
-                this.fillMatrixByNewDonuts();
+                // this.fillMatrixByNewDonuts();
              }else {
                 //Danylo's part
                     //this.swapDonuts();
@@ -289,8 +285,16 @@ class PlayState extends Phaser.State {
         return combinations;
     }
 
+    donutDown(donut, pointer) {
 
+        //Keep track of where the user originally clicked
+        if (this.canMove) {
+            this.activeDonut1 = donut;
 
+            this.startPosX = (donut.x - this.donutWidth / 2) / this.donutWidth;
+            this.startPoxY = (donut.y - this.donutHeight / 2) / this.donutHeight;
+        }
+    }
 
     update() {
 
