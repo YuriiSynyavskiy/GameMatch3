@@ -1,10 +1,10 @@
-import {createButton} from '../objects/sfxButton';
+import {createCustomButton} from '../objects/customButton';
 
 class TutorialState extends Phaser.State {
     create() {
         this.add.sprite(0, 0, 'backgroundImage');
 
-        let soundButton = createButton(this, 10, 10, 'soundButton', 80, 80, () => {
+        let soundButton = createCustomButton(this, 10, 10, 'soundButton', 80, 80, () => {
             if (window['music'].mute) {
                 window['music'].mute = false;
 
@@ -22,7 +22,7 @@ class TutorialState extends Phaser.State {
             soundButton.tint = 0xFFFFFF;
         }
 
-        let returnBtn = createButton(this, this.world.centerX + 110, this.world.centerY + 350, 'returnButton', 230, 150, () => {
+        let returnBtn = createCustomButton(this, this.world.centerX + 110, this.world.centerY + 350, 'returnButton', 230, 150, () => {
             this.state.start('mainMenu');
         });
 

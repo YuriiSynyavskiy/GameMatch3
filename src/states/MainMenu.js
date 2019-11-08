@@ -1,10 +1,10 @@
-import {createButton} from '../objects/sfxButton';
+import {createCustomButton} from '../objects/customButton';
 
 export class MainMenu extends Phaser.State {
     create() {
         this.add.sprite(0, 0, 'backgroundImage');
 
-        let soundButton = createButton(this, 900, 10, 'soundButton', 80, 80, () => {
+        let soundButton = createCustomButton(this, 900, 10, 'soundButton', 80, 80, () => {
             if (window['music'].mute) {
                 window['music'].mute = false;
 
@@ -38,13 +38,13 @@ export class MainMenu extends Phaser.State {
 
         this.animate(this, donutsLogo, this.world.centerX + 350, 85);
 
-        let playBtn = createButton(this, this.world.centerX + 350, this.world.centerY + 50, 'playBtn', 230, 150, () => {
+        let playBtn = createCustomButton(this, this.world.centerX + 350, this.world.centerY + 50, 'playBtn', 230, 150, () => {
             this.state.start('playState');
         });
 
         this.animate(this, playBtn, this.world.centerX + 350, 195);
 
-        let howToPlayBtn = createButton(this, this.world.centerX + 350, this.world.centerY + 200, 'howToPlayBtn', 210, 130, () => {
+        let howToPlayBtn = createCustomButton(this, this.world.centerX + 350, this.world.centerY + 200, 'howToPlayBtn', 210, 130, () => {
             this.state.start('tutorialState');
         });
 

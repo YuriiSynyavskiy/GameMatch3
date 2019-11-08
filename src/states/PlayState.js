@@ -1,15 +1,7 @@
-import {createButton} from '../objects/sfxButton';
+import {createCustomButton} from '../objects/customButton';
 import Donut from '../objects/DonutConstructor';
 
 let mainMatrix = []; // global matrix
-let indexes = {
-    1: 'red-01',
-    2: 'blue-02',
-    3: 'green-03',
-    4: 'lightBlue-04',
-    5: 'yellow-05',
-    6: 'pink-06'
-};
 
 class PlayState extends Phaser.State {
     create() {
@@ -28,7 +20,7 @@ class PlayState extends Phaser.State {
             4: 'lightBlue-04',
             5: 'yellow-05',
             6: 'pink-06'
-        };          //
+        };
 
         this.mainMatrix = [                             // global matrix
             [null, null, null, null, null, null],
@@ -40,7 +32,7 @@ class PlayState extends Phaser.State {
         ];                              //
         //Yura
 
-        let soundButton = createButton(this, 10, 10, 'soundButton', 80, 80, () => {
+        let soundButton = createCustomButton(this, 10, 10, 'soundButton', 80, 80, () => {
             if (window['music'].mute) {
                 window['music'].mute = false;
 
