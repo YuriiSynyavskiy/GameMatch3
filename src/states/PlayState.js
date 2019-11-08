@@ -324,8 +324,6 @@ class PlayState extends Phaser.State {
         }
     }
     refreshMainMatrix(){
-
-
         //Loop through each column starting from the left
         for (let i = 0; i < this.mainMatrix.length; i++)
         {
@@ -372,5 +370,6 @@ class PlayState extends Phaser.State {
         }
     }
 }
-
+//ssssssssssssssssssssssss
 export default PlayState;
+//aaaaaaaaaaaaaaaaaaaaaaaa
