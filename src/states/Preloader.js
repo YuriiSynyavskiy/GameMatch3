@@ -21,9 +21,11 @@ class Preloader extends Phaser.State {
         this.load.image('returnButton', '../assets/images/btn-return.png');
         this.load.image('donutRed', '../assets/images/game/gem-01.png');
         this.load.image('donutBlue', '../assets/images/game/gem-02.png');
+        this.load.image('returnToMainMenu', '../assets/images/btn-mainMenu.png');
     }
 
     create() {
+        //creates music for whole game
         window['music'] = this.add.audio('backgroundMusic');
         window['music'].loop = true;
 
