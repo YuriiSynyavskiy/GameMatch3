@@ -60,9 +60,6 @@ class PlayState extends Phaser.State {
         //     [1, 6, 4, 6, 6, 6],
         //     [2, 2, 6, 1, 3, 3]
         // ];
-        //Yura
-
-        // this.donuts = this.game.add.group();
 
         this.donutWidth = this.game.cache.getImage('red-01').width;     //donut width
         this.donutHeight = this.game.cache.getImage('red-01').height;   //donut height
@@ -150,9 +147,8 @@ class PlayState extends Phaser.State {
         this.game.add.tween(donut).to({y: y * this.donutHeight + (this.donutHeight / 2)}, 600, Phaser.Easing.Linear.In, true);
 
 
-        let tempDonut = new Donut(this.donutHeight, this.donutWidth, randomIndex, donut, [x, y], this.id);
+        let tempDonut = new Donut(this.donutHeight, this.donutWidth, randomIndex, donut, [x, y]);
         tempDonut.sprite.anchor.setTo(0.5, 0.5);
-        this.id += 1;
 
         //Enable input on the donut
         tempDonut.sprite.inputEnabled = true;
@@ -188,22 +184,24 @@ class PlayState extends Phaser.State {
 
     checkMatch() {
         let combinations = this.getMatches();
+
         if (combinations.length > 0) {
 
             this.game.time.events.add(600, () => {
                 this.destroyDonuts(combinations)
             });
 
-            this.canMove = true;
-
             // change value of deleted donuts to null in MainMatrix  &&   Clear array - combinations
             this.game.time.events.add(1000, () => {
                 this.refreshMainMatrix();
                 this.fillMatrixByNewDonuts();
+                this.activeDonutsReset();
                 this.checkMatch();
             });
 
         } else {
+            this.swapDonuts();
+
             this.game.time.events.add(500, () => {
                 this.activeDonutsReset();
 
@@ -219,105 +217,172 @@ class PlayState extends Phaser.State {
     }
 
     getMatches() {
-        let combinations = [];
-        let groupOf3orMore = [];
-        // for horizontal combinations
-
-
-        for (let i = 0; i < this.mainMatrix.length; i++) {
-            let tempLine = this.mainMatrix[i];
-            groupOf3orMore = [];
-            for (let j = 0; j < tempLine.length; j++) {
-                if (tempLine[j] && tempLine[j + 1] && tempLine[j + 2]) {
-                    //console.log("Input in first IF");
-                    //console.log(tempLine[j].index, tempLine[j + 1].index, tempLine[j + 2].index);
-                    if ((tempLine[j].index === tempLine[j + 1].index) && (tempLine[j + 1].index === tempLine[j + 2].index)) {
-                        //console.log("Input in second if");
-                        groupOf3orMore.push(tempLine[j], tempLine[j + 1], tempLine[j + 2]);     // push this 3 elements
-                        let tempIndex = tempLine[j].index;                                  //tempValue for checking value of next
-                        j += 2;
-
-                        //console.log(j);
-                        if ((j === tempLine.length - 1) && (groupOf3orMore.length)) {
-                            combinations.push(groupOf3orMore);
-                            groupOf3orMore = [];
-
-                        } else {                      // for check next elements : if next donut has the same index, check next donut after this while index element will be another
-
-                            for (let nextDonut = j + 1; nextDonut < tempLine.length; nextDonut++) {
-
-                                if (tempIndex === tempLine[nextDonut].index) {
-                                    groupOf3orMore.push(tempLine[nextDonut]);
-                                    j += 1;
-                                    //console.log('Find 1 more match, Pushing him');
-                                } else {
-                                    combinations.push(groupOf3orMore);
-                                    groupOf3orMore = [];
-                                    //console.log('No more matches');
-                                    break;
-                                }
-                            }
-                            if (groupOf3orMore.length) {
-                                combinations.push(groupOf3orMore);
-                                groupOf3orMore = [];
-                            }
-
-                        }                             //
-                    }
-                }
-            }
-        }
+        // let combinations = [];
+        // let groupOf3orMore = [];
+        // // for horizontal combinations
+        //
+        //
+        // for (let i = 0; i < this.mainMatrix.length; i++) {
+        //     let tempLine = this.mainMatrix[i];
+        //     groupOf3orMore = [];
+        //     for (let j = 0; j < tempLine.length; j++) {
+        //         if (tempLine[j] && tempLine[j + 1] && tempLine[j + 2]) {
+        //             //console.log("Input in first IF");
+        //             //console.log(tempLine[j].index, tempLine[j + 1].index, tempLine[j + 2].index);
+        //             if ((tempLine[j].index === tempLine[j + 1].index) && (tempLine[j + 1].index === tempLine[j + 2].index)) {
+        //                 //console.log("Input in second if");
+        //                 groupOf3orMore.push(tempLine[j], tempLine[j + 1], tempLine[j + 2]);     // push this 3 elements
+        //                 let tempIndex = tempLine[j].index;                                  //tempValue for checking value of next
+        //                 j += 2;
+        //
+        //                 //console.log(j);
+        //                 if ((j === tempLine.length - 1) && (groupOf3orMore.length)) {
+        //                     combinations.push(groupOf3orMore);
+        //                     groupOf3orMore = [];
+        //
+        //                 } else {                      // for check next elements : if next donut has the same index, check next donut after this while index element will be another
+        //
+        //                     for (let nextDonut = j + 1; nextDonut < tempLine.length; nextDonut++) {
+        //
+        //                         if (tempIndex === tempLine[nextDonut].index) {
+        //                             groupOf3orMore.push(tempLine[nextDonut]);
+        //                             j += 1;
+        //                             //console.log('Find 1 more match, Pushing him');
+        //                         } else {
+        //                             combinations.push(groupOf3orMore);
+        //                             groupOf3orMore = [];
+        //                             //console.log('No more matches');
+        //                             break;
+        //                         }
+        //                     }
+        //                     if (groupOf3orMore.length) {
+        //                         combinations.push(groupOf3orMore);
+        //                         groupOf3orMore = [];
+        //                     }
+        //
+        //                 }                             //
+        //             }
+        //         }
+        //     }
+        // }
 
         //for vertical combinations
 
+        // for (let i = 0; i < this.mainMatrix.length; i++) {
+        //     let tempRaw = this.mainMatrix.map(function (value, index) {
+        //         return value[i];
+        //     });
+        //
+        //     groupOf3orMore = [];
+        //
+        //     for (let j = 0; j < tempRaw.length; j++) {
+        //         if (tempRaw[j] && tempRaw[j + 1] && tempRaw[j + 2]) {
+        //             //console.log("Input in first IF");
+        //             //console.log(tempLine[j].index, tempLine[j + 1].index, tempLine[j + 2].index);
+        //             if ((tempRaw[j].index === tempRaw[j + 1].index) && (tempRaw[j + 1].index === tempRaw[j + 2].index)) {
+        //                 //console.log("Input in second if");
+        //                 groupOf3orMore.push(tempRaw[j], tempRaw[j + 1], tempRaw[j + 2]);     // push this 3 elements
+        //                 let tempIndex = tempRaw[j].index;                                  //tempValue for checking value of next
+        //                 j += 2;
+        //                 //console.log(j);
+        //                 if ((j === tempRaw.length - 1) && (groupOf3orMore.length)) {
+        //                     combinations.push(groupOf3orMore);
+        //                     groupOf3orMore = [];
+        //
+        //                 } else {                      // for check next elements : if next donut has the same index, check next donut after this while index element will be another
+        //
+        //                     for (let nextDonut = j + 1; nextDonut < tempRaw.length; nextDonut++) {
+        //                         if (tempIndex === tempRaw[nextDonut].index) {
+        //                             groupOf3orMore.push(tempRaw[nextDonut]);
+        //                             j += 1;
+        //                             //console.log('Find 1 more match, Pushing him');
+        //                         } else {
+        //                             combinations.push(groupOf3orMore);
+        //                             groupOf3orMore = [];
+        //                             //console.log('No more matches');
+        //                             break;
+        //                         }
+        //                     }
+        //                     if (groupOf3orMore.length) {
+        //                         combinations.push(groupOf3orMore);
+        //                         groupOf3orMore = [];
+        //                     }
+        //
+        //                 }                             //
+        //             }
+        //         }
+        //     }
+        // }
+
+
+        // return combinations;
+
+        let matches = [];
+        let groups = [];
+
+        //Check for horizontal matches
         for (let i = 0; i < this.mainMatrix.length; i++) {
-            let tempRaw = this.mainMatrix.map(function (value, index) {
-                return value[i];
-            });
-
-            groupOf3orMore = [];
-
-            for (let j = 0; j < tempRaw.length; j++) {
-                if (tempRaw[j] && tempRaw[j + 1] && tempRaw[j + 2]) {
-                    //console.log("Input in first IF");
-                    //console.log(tempLine[j].index, tempLine[j + 1].index, tempLine[j + 2].index);
-                    if ((tempRaw[j].index === tempRaw[j + 1].index) && (tempRaw[j + 1].index === tempRaw[j + 2].index)) {
-                        //console.log("Input in second if");
-                        groupOf3orMore.push(tempRaw[j], tempRaw[j + 1], tempRaw[j + 2]);     // push this 3 elements
-                        let tempIndex = tempRaw[j].index;                                  //tempValue for checking value of next
-                        j += 2;
-                        //console.log(j);
-                        if ((j === tempRaw.length - 1) && (groupOf3orMore.length)) {
-                            combinations.push(groupOf3orMore);
-                            groupOf3orMore = [];
-
-                        } else {                      // for check next elements : if next donut has the same index, check next donut after this while index element will be another
-
-                            for (let nextDonut = j + 1; nextDonut < tempRaw.length; nextDonut++) {
-                                if (tempIndex === tempRaw[nextDonut].index) {
-                                    groupOf3orMore.push(tempRaw[nextDonut]);
-                                    j += 1;
-                                    //console.log('Find 1 more match, Pushing him');
-                                } else {
-                                    combinations.push(groupOf3orMore);
-                                    groupOf3orMore = [];
-                                    //console.log('No more matches');
-                                    break;
+            let tempArr = this.mainMatrix[i];
+            groups = [];
+            for (let j = 0; j < tempArr.length; j++) {
+                if (j < tempArr.length - 2)
+                    if (this.mainMatrix[i][j] && this.mainMatrix[i][j + 1] && this.mainMatrix[i][j + 2]) {
+                        if (this.mainMatrix[i][j].index === this.mainMatrix[i][j + 1].index && this.mainMatrix[i][j + 1].index === this.mainMatrix[i][j + 2].index) {
+                            if (groups.length > 0) {
+                                if (groups.indexOf(this.mainMatrix[i][j]) === -1) {
+                                    matches.push(groups);
+                                    groups = [];
                                 }
                             }
-                            if (groupOf3orMore.length) {
-                                combinations.push(groupOf3orMore);
-                                groupOf3orMore = [];
-                            }
 
-                        }                             //
+                            if (groups.indexOf(this.mainMatrix[i][j]) === -1) {
+                                groups.push(this.mainMatrix[i][j]);
+                            }
+                            if (groups.indexOf(this.mainMatrix[i][j + 1]) === -1) {
+                                groups.push(this.mainMatrix[i][j + 1]);
+                            }
+                            if (groups.indexOf(this.mainMatrix[i][j + 2]) === -1) {
+                                groups.push(this.mainMatrix[i][j + 2]);
+                            }
+                        }
                     }
-                }
             }
+            if (groups.length > 0) matches.push(groups);
         }
 
+        //Check for vertical matches
+        for (let j = 0; j < this.mainMatrix.length; j++) {
+            let tempArr = this.mainMatrix[j];
+            groups = [];
+            for (let i = 0; i < tempArr.length; i++) {
+                if (i < tempArr.length - 2)
+                    if (this.mainMatrix[i][j] && this.mainMatrix[i + 1][j] && this.mainMatrix[i + 2][j]) {
+                        if (this.mainMatrix[i][j].index === this.mainMatrix[i + 1][j].index && this.mainMatrix[i + 1][j].index === this.mainMatrix[i + 2][j].index) {
+                            if (groups.length > 0) {
+                                if (groups.indexOf(this.mainMatrix[i][j]) === -1) {
+                                    matches.push(groups);
+                                    groups = [];
+                                }
+                            }
 
-        return combinations;
+                            if (groups.indexOf(this.mainMatrix[i][j]) === -1) {
+                                groups.push(this.mainMatrix[i][j]);
+                            }
+                            if (groups.indexOf(this.mainMatrix[i + 1][j]) === -1) {
+                                groups.push(this.mainMatrix[i + 1][j]);
+                            }
+                            if (groups.indexOf(this.mainMatrix[i + 2][j]) === -1) {
+                                groups.push(this.mainMatrix[i + 2][j]);
+                            }
+                        }
+                    }
+            }
+            if (groups.length > 0) matches.push(groups);
+        }
+        console.log('____________________');
+        console.log(matches);
+        console.log('____________________');
+        return matches;
     }
 
     update() {
@@ -367,7 +432,7 @@ class PlayState extends Phaser.State {
     }
 
     swapDonuts() {
-        if (this.activeDonut1.sprite && this.activeDonut2.sprite) {
+        if (this.activeDonut1 && this.activeDonut2) {
 
             let donut1Pos = {
                 x: (this.activeDonut1.sprite.x - this.donutWidth / 2) / this.donutHeight,
@@ -417,7 +482,7 @@ class PlayState extends Phaser.State {
                 if (this.mainMatrix[i][j] == null && this.mainMatrix[i][j - 1] != null) {
                     //Move the tile above down one
                     let tempDonut = new Donut(this.donutHeight, this.donutWidth, this.mainMatrix[i][j - 1].index, this.mainMatrix[i][j - 1].sprite, [i, j], this.mainMatrix[i][j - 1].id);
-                    ;
+
                     this.mainMatrix[i][j] = tempDonut;
                     this.mainMatrix[i][j - 1] = null;
                     this.game.add.tween(tempDonut.sprite).to({y: (this.donutHeight * j) + (this.donutHeight / 2)}, 200, Phaser.Easing.Linear.In, true);
