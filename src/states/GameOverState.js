@@ -26,13 +26,17 @@ class GameOverState extends Phaser.State{
 
         animate(this, timeUp, this.world.centerX + 500, this.world.centerX);
 
-        let returnBtn = createCustomButton(this, this.world.centerX + 1000, this.world.centerY + 100, 'returnToMainMenu', 230, 150, () => {
+        let yourScore = this.add.text(this.world.centerX + 1000, this.world.centerY, `Your score: ${window['score']}`, {font: "50px Fredoka One", fill: "red"});
+        yourScore.anchor.setTo(0.5, 0.5);
+
+        animate(this, yourScore, this.world.centerX + 1000, this.world.centerX);
+
+        let returnBtn = createCustomButton(this, this.world.centerX + 1500, this.world.centerY + 100, 'returnToMainMenu', 230, 150, () => {
             this.state.start('mainMenu');
         });
-
-        animate(this, returnBtn, this.world.centerX + 1000, this.world.centerX);
-
         returnBtn.anchor.setTo(0.5, 0.5);
+
+        animate(this, returnBtn, this.world.centerX + 1500, this.world.centerX);
     }
 }
 

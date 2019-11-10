@@ -57,15 +57,6 @@ class TutorialState extends Phaser.State {
             x: 1,
             y: 1
         };
-        this.donut = this.add.sprite(200, 200, 'green-03');
-        this.donut2 = this.add.sprite(300, 200, 'lightBlue-04');
-        let tempX1 = this.donut.x;
-        let tempX2 = this.donut2.x;
-        this.game.add.tween(this.donut).to({x: tempX2}, 200, Phaser.Easing.Linear.In, true);
-        this.game.add.tween(this.donut2).to({x: tempX1}, 200, Phaser.Easing.Linear.In, true);
-        // logObject(sprite){
-        //     console.log(sprite);
-        // }
     }
 }
     export default TutorialState;
