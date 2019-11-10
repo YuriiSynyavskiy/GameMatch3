@@ -76,8 +76,6 @@ class PlayState extends Phaser.State {
             6: 'pink-06'
         };
 
-        this.activeDonut1 = null;
-        this.activeDonut2 = null;
 
         this.canMove = false;
 
@@ -93,12 +91,14 @@ class PlayState extends Phaser.State {
         this.generateArray();           //mainMatrix and animation
 
 
-        console.log('after creating',this.mainMatrix);
+        console.log('after creating', this.mainMatrix);
 
         this.canMove = true;
 
         this.checkMatch();
 
+        this.activeDonut1 = null;
+        this.activeDonut2 = null;
     }
 
     generateArray() {
@@ -109,15 +109,13 @@ class PlayState extends Phaser.State {
             for (let j = 0; j < this.mainMatrix.length; j++) {
                 //Add the donut to the game at this matrix position
 
-               let donut = this.addDonut(i, j);
+                let donut = this.addDonut(i, j);
 
                 //Keep a track of the donut position in our mainMatrix
 
 
                 console.log(donut);
                 this.mainMatrix[i][j] = donut;
-
-
 
 
             }
@@ -154,53 +152,70 @@ class PlayState extends Phaser.State {
 
         let tempDonut = new Donut(this.donutHeight, this.donutWidth, randomIndex, donut, [x, y], this.id);
         tempDonut.sprite.anchor.setTo(0.5, 0.5);
-        this.id+=1;
+        this.id += 1;
 
-            //Enable input on the donut
+        //Enable input on the donut
         tempDonut.sprite.inputEnabled = true;
 
-        tempDonut.sprite.events.onInputDown.add(()=>{this.donutDown(tempDonut);}, this);
+        tempDonut.sprite.events.onInputDown.add(() => {
+            this.donutDown(tempDonut);
+        }, this);
+
+        //Trigger the tileDown function whenever the user clicks or taps on this tile
+        // donut.events.onInputDown.add(this.tileDown, this);
 
         return tempDonut;
-
-
 
         //Animate the tile into the correct vertical position
 
         //Set the tiles anchor point to the center
 
     }
-    donutDown(a){
-    console.log(a);
+
+    donutDown(donut) {
+        console.log(donut);
+
+        if (this.canMove) {
+            this.activeDonut1 = donut;
+
+            this.startPosX = (donut.sprite.x - this.donutWidth / 2) / this.donutWidth;
+            this.startPosY = (donut.sprite.y - this.donutWidth / 2) / this.donutWidth;
+
+            console.log(this.startPosX, this.startPosY);
+        }
     }
 
 
     checkMatch() {
         let combinations = this.getMatches();
-       // if(combinations.length>0) {
+        if (combinations.length > 0) {
 
-        this.game.time.events.add(1000, () =>{this.destroyDonuts(combinations)});
+            this.game.time.events.add(600, () => {
+                this.destroyDonuts(combinations)
+            });
 
-        this.canMove = true;
+            this.canMove = true;
 
             // change value of deleted donuts to null in MainMatrix  &&   Clear array - combinations
-        this.game.time.events.add(1500, () =>{ this.refreshMainMatrix();
-            this.fillMatrixByNewDonuts(); this.checkMatch();});
+            this.game.time.events.add(1000, () => {
+                this.refreshMainMatrix();
+                this.fillMatrixByNewDonuts();
+                this.checkMatch();
+            });
 
+        } else {
+            this.game.time.events.add(500, () => {
+                this.activeDonutsReset();
 
+                this.canMove = true;
+            });
+        }
 
+    }
 
-               // this.checkMatch();
-
-        // } else
-        //     {
-        //         this.swapDonuts();
-        //         this.game.time.events.add(500, ()=>{
-        //             this.activeDonutsReset();
-        //        this.canMove = true;
-        //     });
-        //     }
-
+    activeDonutsReset() {
+        this.activeDonut1 = null;
+        this.activeDonut2 = null;
     }
 
     getMatches() {
@@ -253,9 +268,7 @@ class PlayState extends Phaser.State {
             }
         }
 
-
         //for vertical combinations
-
 
         for (let i = 0; i < this.mainMatrix.length; i++) {
             let tempRaw = this.mainMatrix.map(function (value, index) {
@@ -307,18 +320,85 @@ class PlayState extends Phaser.State {
         return combinations;
     }
 
-
-
     update() {
+        if (this.activeDonut1 && !this.activeDonut2) {
 
+            //Get the location of where the pointer is currently
+            let hoverX = this.input.x;
+            let hoverY = this.input.y;
+
+            //Figure out what position on the grid that translates to
+            let hoverPosX = Math.floor(hoverX / this.donutWidth);
+            let hoverPosY = Math.floor(hoverY / this.donutHeight);
+
+            //See if the user had dragged over to another position on the grid
+            let difX = (hoverPosX - this.startPosX);
+            let difY = (hoverPosY - this.startPosY);
+
+            //Make sure we are within the bounds of the grid
+            if (!(hoverPosY > this.mainMatrix[0].length - 1 || hoverPosY < 0) && !(hoverPosX > this.mainMatrix.length - 1 || hoverPosX < 0)) {
+
+                //If the user has dragged an entire tiles width or height in the x or y direction
+                //trigger a tile swap
+                if ((Math.abs(difY) === 1 && difX === 0) || (Math.abs(difX) === 1 && difY === 0)) {
+
+                    //Prevent the player from making more moves whilst checking is in progress
+                    this.canMove = false;
+
+                    //Set the second active tile (the one where the user dragged to)
+                    this.activeDonut2 = this.mainMatrix[hoverPosX][hoverPosY];
+
+                    //Swap the two active tiles
+                    this.swapDonuts();
+
+                    //After the swap has occurred, check the grid for any matches
+                    this.time.events.add(500, () => {
+                        this.checkMatch();
+                    });
+                }
+
+            }
+
+        }
 
         if (this.timeExpired > this.timeToPlay) {
             this.state.start('gameOverState');
         }
     }
 
-    destroyDonuts(combinations) {                                            // animations  ...................
+    swapDonuts() {
+        if (this.activeDonut1.sprite && this.activeDonut2.sprite) {
 
+            let donut1Pos = {
+                x: (this.activeDonut1.sprite.x - this.donutWidth / 2) / this.donutHeight,
+                y: (this.activeDonut1.sprite.y - this.donutHeight / 2) / this.donutHeight
+            };
+            let donut2Pos = {
+                x: (this.activeDonut2.sprite.x - this.donutWidth / 2) / this.donutHeight,
+                y: (this.activeDonut2.sprite.y - this.donutHeight / 2) / this.donutWidth
+            };
+
+            //Swap them in our "theoretical" grid
+            this.mainMatrix[donut1Pos.x][donut1Pos.y] = this.activeDonut2;
+            this.mainMatrix[donut2Pos.x][donut2Pos.y] = this.activeDonut1;
+
+            //Actually move them on the screen
+            this.add.tween(this.activeDonut1.sprite).to({
+                x: donut2Pos.x * this.donutWidth + (this.donutWidth / 2),
+                y: donut2Pos.y * this.donutHeight + (this.donutHeight / 2)
+            }, 200, Phaser.Easing.Linear.In, true);
+            this.add.tween(this.activeDonut2.sprite).to({
+                x: donut1Pos.x * this.donutWidth + (this.donutWidth / 2),
+                y: donut1Pos.y * this.donutHeight + (this.donutHeight / 2)
+            }, 200, Phaser.Easing.Linear.In, true);
+
+            this.activeDonut1 = this.mainMatrix[donut1Pos.x][donut1Pos.y];
+            this.activeDonut2 = this.mainMatrix[donut2Pos.x][donut2Pos.y];
+
+        }
+    }
+
+    destroyDonuts(combinations) {                                            // animations  ...................
         for (let i = 0; i < combinations.length; i++) {
             for (let j = 0; j < combinations[i].length; j++) {
                 combinations[i][j].sprite.destroy();
@@ -326,6 +406,7 @@ class PlayState extends Phaser.State {
             }
         }
     }
+
     refreshMainMatrix() {
         //Loop through each column starting from the left
         for (let i = 0; i < this.mainMatrix.length; i++) {
@@ -336,10 +417,10 @@ class PlayState extends Phaser.State {
                 if (this.mainMatrix[i][j] == null && this.mainMatrix[i][j - 1] != null) {
                     //Move the tile above down one
                     let tempDonut = new Donut(this.donutHeight, this.donutWidth, this.mainMatrix[i][j - 1].index, this.mainMatrix[i][j - 1].sprite, [i, j], this.mainMatrix[i][j - 1].id);
-                        ;
+                    ;
                     this.mainMatrix[i][j] = tempDonut;
                     this.mainMatrix[i][j - 1] = null;
-                    this.game.add.tween(tempDonut.sprite).to({y: (this.donutHeight * j) + (this.donutHeight / 2) }, 200, Phaser.Easing.Linear.In, true);
+                    this.game.add.tween(tempDonut.sprite).to({y: (this.donutHeight * j) + (this.donutHeight / 2)}, 200, Phaser.Easing.Linear.In, true);
 
                     //The positions have changed so start this process again from the bottom
                     //NOTE: This is not set to me.tileGrid[i].length - 1 because it will immediately be decremented as
@@ -359,7 +440,8 @@ class PlayState extends Phaser.State {
             for (let j = 0; j < this.mainMatrix.length; j++) {
 
                 //Add the donut to the game at this matrix position
-                if (this.mainMatrix[i][j]===null) {
+
+                if (!this.mainMatrix[i][j]) {
                     this.mainMatrix[i][j] = this.addDonut(i, j);
 
                 }
