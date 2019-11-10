@@ -188,20 +188,21 @@ class PlayState extends Phaser.State {
 
     checkMatch() {
         let combinations = this.getMatches();
+        console.log(combinations);
         if (combinations.length > 0) {
 
             this.game.time.events.add(600, () => {
-                this.destroyDonuts(combinations)
+
+            this.refreshMainMatrix();
+            this.fillMatrixByNewDonuts();
+            this.activeDonutsReset();
+            this.checkMatch();
             });
 
-            this.canMove = true;
+
 
             // change value of deleted donuts to null in MainMatrix  &&   Clear array - combinations
-            this.game.time.events.add(1000, () => {
-                this.refreshMainMatrix();
-                this.fillMatrixByNewDonuts();
-                this.checkMatch();
-            });
+
 
         } else {
             this.game.time.events.add(500, () => {
