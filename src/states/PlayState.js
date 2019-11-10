@@ -57,10 +57,10 @@ class PlayState extends Phaser.State {
         //     [5, 5, 2, 5, 1, 2],
         //     [1, 2, 3, 4, 6, 5],
         //     [2, 5, 4, 3, 5, 3],
-        //     [1, 6, 4, 6, 6, 6],
+        //     [1, 6, 4, 6, 1, 6],
         //     [2, 2, 6, 1, 3, 3]
         // ];
-        //Yura
+
 
         // this.donuts = this.game.add.group();
 
