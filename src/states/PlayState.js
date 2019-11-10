@@ -12,10 +12,10 @@ class PlayState extends Phaser.State {
 
         //timer
         let startTimer = new Date();
-        this.timeToPlay = 3;
+        this.timeToPlay = 30;
         this.timeExpired = 0;
 
-        let timeLabel = this.add.text(500, 38, "60", {font: "50px Fredoka One", fill: "red"});
+        let timeLabel = this.add.text(500, 38, "30", {font: "50px Fredoka One", fill: "red"});
 
         this.time.events.loop(100, () => {
             let currentTime = new Date();
@@ -62,9 +62,10 @@ class PlayState extends Phaser.State {
         //     [5, 5, 2, 5, 1, 2],
         //     [1, 2, 3, 4, 6, 5],
         //     [2, 5, 4, 3, 5, 3],
-        //     [1, 6, 4, 6, 6, 6],
+        //     [1, 6, 4, 6, 1, 6],
         //     [2, 2, 6, 1, 3, 3]
         // ];
+
 
         this.donutWidth = this.game.cache.getImage('red-01').width;     //donut width
         this.donutHeight = this.game.cache.getImage('red-01').height;   //donut height
@@ -184,12 +185,13 @@ class PlayState extends Phaser.State {
     checkMatch() {
         let combinations = this.getMatches();
 
+
         if (combinations.length > 0) {
 
-            this.game.time.events.add(600, () => {
-                this.destroyDonuts(combinations)
-            });
 
+            this.game.time.events.add(600, () => {
+                this.destroyDonuts(combinations);
+            });
             // change value of deleted donuts to null in MainMatrix  &&   Clear array - combinations
             this.game.time.events.add(1000, () => {
                 this.refreshMainMatrix();
@@ -197,6 +199,7 @@ class PlayState extends Phaser.State {
                 this.activeDonutsReset();
                 this.checkMatch();
             });
+
 
         } else {
             this.swapDonuts();
@@ -264,6 +267,9 @@ class PlayState extends Phaser.State {
             }
         }
 
+
+        //for vertical combinations
+
         for (let i = 0; i < this.mainMatrix.length; i++) {
             let tempRaw = this.mainMatrix.map(function (value, index) {
                 return value[i];
@@ -305,8 +311,11 @@ class PlayState extends Phaser.State {
                                 groupOf3orMore = [];
                             }
 
+
                         }
+
                     }
+
                 }
             }
         }
@@ -361,42 +370,40 @@ class PlayState extends Phaser.State {
     }
 
     swapDonuts() {
+
         if (this.activeDonut1 && this.activeDonut2) {
 
-            let donut1Pos = {
-                x: (this.activeDonut1.sprite.x - this.donutWidth / 2) / this.donutHeight,
-                y: (this.activeDonut1.sprite.y - this.donutHeight / 2) / this.donutHeight
-            };
-            let donut2Pos = {
-                x: (this.activeDonut2.sprite.x - this.donutWidth / 2) / this.donutHeight,
-                y: (this.activeDonut2.sprite.y - this.donutHeight / 2) / this.donutWidth
-            };
-
+            let tempX1 = this.activeDonut1.positionInMatrix[0];
+            let tempY1 = this.activeDonut1.positionInMatrix[1];
+            let tempX2 = this.activeDonut2.positionInMatrix[0];
+            let tempY2 = this.activeDonut2.positionInMatrix[1];
             //Swap them in our "theoretical" grid
-            this.mainMatrix[donut1Pos.x][donut1Pos.y] = this.activeDonut2;
-            this.mainMatrix[donut2Pos.x][donut2Pos.y] = this.activeDonut1;
+            this.mainMatrix[tempX1][tempY1] = new Donut(this.donutHeight, this.donutWidth, this.activeDonut2.index, this.activeDonut2.sprite, [tempX1, tempY1], this.activeDonut2.id);
+            this.mainMatrix[tempX2][tempY2] = new Donut(this.donutHeight, this.donutWidth, this.activeDonut1.index, this.activeDonut1.sprite, [tempX2, tempY2], this.activeDonut1.id);
 
             //Actually move them on the screen
 
             this.selectSound.play();
 
             this.add.tween(this.activeDonut1.sprite).to({
-                x: donut2Pos.x * this.donutWidth + (this.donutWidth / 2),
-                y: donut2Pos.y * this.donutHeight + (this.donutHeight / 2)
+                x: tempX2 * this.donutWidth + (this.donutWidth / 2),
+                y: tempY2 * this.donutHeight + (this.donutHeight / 2)
             }, 200, Phaser.Easing.Linear.In, true);
             this.add.tween(this.activeDonut2.sprite).to({
-                x: donut1Pos.x * this.donutWidth + (this.donutWidth / 2),
-                y: donut1Pos.y * this.donutHeight + (this.donutHeight / 2)
+                x: tempX1 * this.donutWidth + (this.donutWidth / 2),
+                y: tempY1 * this.donutHeight + (this.donutHeight / 2)
             }, 200, Phaser.Easing.Linear.In, true);
 
-            this.activeDonut1 = this.mainMatrix[donut1Pos.x][donut1Pos.y];
-            this.activeDonut2 = this.mainMatrix[donut2Pos.x][donut2Pos.y];
+            this.activeDonut1 = this.mainMatrix[tempX1][tempY1];
+            this.activeDonut2 = this.mainMatrix[tempX2][tempY2];
 
         }
+
     }
 
     destroyDonuts(combinations) {                                            // animations  ...................
         for (let i = 0; i < combinations.length; i++) {
+            console.log('Combanitios[i]', combinations[i]);
             for (let j = 0; j < combinations[i].length; j++) {
                 window['score'] += 10;
                 this.scoreText.text = window['score'];
