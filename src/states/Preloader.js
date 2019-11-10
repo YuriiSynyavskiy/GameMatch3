@@ -1,6 +1,8 @@
 class Preloader extends Phaser.State {
     preload() {
         this.load.audio('backgroundMusic', '../assets/audio/background.mp3');
+        this.load.audio('destroyDonutsSound', '../assets/audio/kill.mp3');
+        this.load.audio('swapSound', '../assets/audio/select-1.mp3');
         this.load.image('backgroundImage', '../assets/images/backgrounds/background.jpg');
         this.load.image('donut', '../assets/images/donut.png');
         this.load.image('donutShadow', '../assets/images/big-shadow.png');
