@@ -104,7 +104,7 @@ class PlayState extends Phaser.State {
 
         let donut = this.add.sprite((x * this.donutWidth) + this.donutWidth / 2, 0, this.indexes[randomIndex]);
 
-        this.game.add.tween(donut).to({y: y * this.donutHeight + (this.donutHeight / 2)}, 600, Phaser.Easing.Linear.In, true);
+        this.game.add.tween(donut).to({y: y * this.donutHeight + (this.donutHeight / 2) + 120}, 600, Phaser.Easing.Linear.In, true);
 
         let tempDonut = new Donut(this.donutHeight, this.donutWidth, randomIndex, donut);
 
@@ -124,7 +124,7 @@ class PlayState extends Phaser.State {
             this.activeDonut1 = donut;
 
             this.startPosX = (donut.sprite.x - this.donutWidth / 2) / this.donutWidth;
-            this.startPosY = (donut.sprite.y - this.donutWidth / 2) / this.donutWidth;
+            this.startPosY = (donut.sprite.y - 120 - this.donutWidth / 2) / this.donutWidth;
         }
     }
 
@@ -271,7 +271,7 @@ class PlayState extends Phaser.State {
         if (this.activeDonut1 && !this.activeDonut2) {
 
             let hoverX = this.input.x;
-            let hoverY = this.input.y;
+            let hoverY = this.input.y - 120;
 
             let hoverPosX = Math.floor(hoverX / this.donutWidth);
             let hoverPosY = Math.floor(hoverY / this.donutHeight);
@@ -305,11 +305,11 @@ class PlayState extends Phaser.State {
         if (this.activeDonut1 && this.activeDonut2) {
             let donut1Pos = {
                 x: (this.activeDonut1.sprite.x - this.donutWidth / 2) / this.donutWidth,
-                y: (this.activeDonut1.sprite.y - this.donutWidth / 2) / this.donutWidth
+                y: (this.activeDonut1.sprite.y - 120 - this.donutWidth / 2) / this.donutWidth
             };
             let donut2Pos = {
                 x: (this.activeDonut2.sprite.x - this.donutWidth / 2) / this.donutWidth,
-                y: (this.activeDonut2.sprite.y - this.donutWidth / 2) / this.donutWidth
+                y: (this.activeDonut2.sprite.y - 120 - this.donutWidth / 2) / this.donutWidth
             };
 
             if (!window['music'].mute) {
@@ -321,12 +321,12 @@ class PlayState extends Phaser.State {
 
             this.add.tween(this.activeDonut1.sprite).to({
                 x: donut2Pos.x * this.donutWidth + (this.donutWidth / 2),
-                y: donut2Pos.y * this.donutHeight + (this.donutHeight / 2)
+                y: donut2Pos.y * this.donutHeight + (this.donutHeight / 2) + 120
             }, 200, Phaser.Easing.Linear.In, true);
 
             this.add.tween(this.activeDonut2.sprite).to({
                 x: donut1Pos.x * this.donutWidth + (this.donutWidth / 2),
-                y: donut1Pos.y * this.donutHeight + (this.donutHeight / 2)
+                y: donut1Pos.y * this.donutHeight + (this.donutHeight / 2) + 120
             }, 200, Phaser.Easing.Linear.In, true);
         }
     }
@@ -382,7 +382,7 @@ class PlayState extends Phaser.State {
                     this.mainMatrix[i][j] = tempDonut;
                     this.mainMatrix[i][j - 1] = null;
 
-                    this.game.add.tween(tempDonut.sprite).to({y: (this.donutHeight * j) + (this.donutHeight / 2)}, 200, Phaser.Easing.Linear.In, true);
+                    this.game.add.tween(tempDonut.sprite).to({y: (this.donutHeight * j) + (this.donutHeight / 2) + 120}, 200, Phaser.Easing.Linear.In, true);
 
                     j = this.mainMatrix[i].length;
                 }
